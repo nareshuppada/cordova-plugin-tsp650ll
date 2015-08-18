@@ -31,7 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.provider.Settings;
 
-public class StarPrinter extends CordovaPlugin {
+public class TSP650ll extends CordovaPlugin {
 
 	public static final String CHECKSTATUS = "CheckStatus";
 	
