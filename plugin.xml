@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.bt.printer"
+        version="0.0.1">
+
+    <name>Printer</name>
+    <description>
+        Cordova plugin to for TSP650II Printer.
+    </description>
+
+    <repo>
+       <!-- TO be Added. -->
+    </repo>
+
+    <keywords>
+		TSP650II bluetooth printer android
+    </keywords>
+
+    <license></license>
+
+    <author>Naresh Uppada</author>
+
+    <!-- cordova -->
+	<engines>
+		<engine name="cordova" version=">=3.0.0" />
+	</engines>
+    <!-- interface -->
+    <js-module src="www/TSP650ll.js" name="TSP650ll">
+        <clobbers target="plugin.printer" />
+        <clobbers target="cordova.plugins.printer" />
+    </js-module>
+
+ 
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="TSP650ll">
+                <param name="android-package" value="com.bt.printer.TSP650ll"/>
+            </feature>
+        </config-file>
+		
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+        </config-file>
+
+		<source-file src="src/android/TSP650ll.java" target-dir="src/com/bt/printer" />
+		<source-file src="src/android/lib/StarIOPort3.1.jar" target-dir="libs" />
+    </platform>
+</plugin>
