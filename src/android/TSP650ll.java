@@ -43,7 +43,7 @@ public class TSP650ll extends CordovaPlugin {
 	/**
 	 * Constructor.
 	 */
-	public StarPrinter() {
+	public TSP650ll() {
 	}
 
 	/*
@@ -61,7 +61,7 @@ public class TSP650ll extends CordovaPlugin {
 		try {
 			if (CHECKSTATUS.equals(action)) {
 				Context context = this.cordova.getActivity();
-				StarPrinter.CheckStatus(context, "BT:Star Micronics", "mini");
+				TSP650ll.CheckStatus(context, "BT:Star Micronics", "mini");
 				callbackContext.success();
 				return true;
 			}
