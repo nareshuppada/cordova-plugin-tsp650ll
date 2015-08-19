@@ -8,3 +8,8 @@ Cordova plugin for bluetooth printer tps650ll
 ```
 TSP650ll.CheckStatus(1,onsucesscallback,onerrorcallback);
 ```
+
+### Test Print
+```
+TSP650ll.PrintHello(1,onsucesscallback,onerrorcallback);
+```

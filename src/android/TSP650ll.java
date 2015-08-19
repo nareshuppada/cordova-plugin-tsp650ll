@@ -34,6 +34,7 @@ import android.provider.Settings;
 public class TSP650ll extends CordovaPlugin {
 
 	public static final String CHECKSTATUS = "CheckStatus";
+	public static final String PRINTHELLO = "printHello";
 	
 
 	public Boolean trackerStarted = false;
@@ -65,6 +66,14 @@ public class TSP650ll extends CordovaPlugin {
 				callbackContext.success();
 				return true;
 			}
+			else if (PRINTHELLO.equals(action)) {
+
+				Context context = this.cordova.getActivity();
+				TSP650ll.printHello(context, "BT:Star Micronics",
+						"mini", "3inch (80mm)");
+				callbackContext.success();
+				return true;
+			} 
 			else{
 				callbackContext.error("Invalid action");
 				return false;
@@ -80,6 +89,86 @@ public class TSP650ll extends CordovaPlugin {
 	// LOCAL METHODS
 	// --------------------------------------------------------------------------
 
+	private static boolean sendCommand(Context context, String portName,
+			String portSettings, ArrayList<byte[]> byteList) {
+		boolean result = true;
+		StarIOPort port = null;
+		try {
+
+			port = StarIOPort.getPort(portName, portSettings, 20000, context);
+
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+
+
+
+			/* Start of Begin / End Checked Block Sample code */
+			StarPrinterStatus status = port.beginCheckedBlock();
+
+			if (true == status.offline) {
+				throw new StarIOPortException("A printer is offline");
+			}
+
+			byte[] commandToSendToPrinter = convertFromListByteArrayTobyteArray(byteList);
+			port.writePort(commandToSendToPrinter, 0,
+					commandToSendToPrinter.length);
+
+			port.setEndCheckedBlockTimeoutMillis(30000);
+			status = port.endCheckedBlock();
+
+			if (true == status.coverOpen) {
+				throw new StarIOPortException("Printer cover is open");
+			} else if (true == status.receiptPaperEmpty) {
+				throw new StarIOPortException("Receipt paper is empty");
+			} else if (true == status.offline) {
+				throw new StarIOPortException("Printer is offline");
+			}
+			
+		} catch (StarIOPortException e) {
+			result = false;
+			Builder dialog = new AlertDialog.Builder(context);
+			dialog.setNegativeButton("Ok", null);
+			AlertDialog alert = dialog.create();
+			alert.setTitle("Failure");
+			alert.setMessage(e.getMessage());
+			alert.setCancelable(false);
+			alert.show();
+		} finally {
+			if (port != null) {
+				try {
+					StarIOPort.releasePort(port);
+				} catch (StarIOPortException e) {
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	public static boolean printHello(Context context, String portName,
+			String portSettings, String strPrintArea) {
+		ArrayList<byte[]> list = new ArrayList<byte[]>();
+
+		if (strPrintArea.equals("3inch (80mm)")) {
+			byte[] outputByteBuffer = null;
+
+			list.add(new byte[] { 0x1d, 0x57, 0x40, 0x32 }); // Page Area
+																
+
+			list.add(new byte[] { 0x1b, 0x61, 0x00 }); // Left Alignment
+
+			
+
+			list.add(("\nHello World\n" + "Testing\n" + "Print\n\n").getBytes());
+
+
+			list.add("\n\n\n\n".getBytes());
+		} 
+
+		return sendCommand(context, portName, portSettings, list);
+	}
 
 
 	private static void ShowAlert(String Title, String Message) {
@@ -103,15 +192,9 @@ public class TSP650ll extends CordovaPlugin {
 			String portSettings) {
 		StarIOPort port = null;
 		try {
-			/*
-			 * using StarIOPort3.1.jar (support USB Port) Android OS Version:
-			 * upper 2.2
-			 */
+			
 			port = StarIOPort.getPort(portName, portSettings, 10000, context);
-			/*
-			 * using StarIOPort.jar Android OS Version: under 2.1 port =
-			 * StarIOPort.getPort(portName, portSettings, 10000);
-			 */
+			
 
 			// A sleep is used to get time for the socket to completely open
 			try {
